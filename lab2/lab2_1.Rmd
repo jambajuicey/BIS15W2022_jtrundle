@@ -39,6 +39,12 @@ To print the object to the screen, just type x.
 ```{r}
 x
 ```
+```{r}
+x <- 60
+```
+```{r}
+x+6
+```
 
 Once an object has been created, you can do things with them.  
 ```{r}
@@ -50,6 +56,14 @@ Here we make a new object `my_experiment` that is the sum of the treatment and c
 ```{r}
 my_experiment <- sum(treatment, control)
 my_experiment
+```
+```{r}
+person_1 <- 40
+person_2 <- 30
+```
+```{r}
+julies_experiment <- sum(person_1, person_2)
+julies_experiment
 ```
 
 ## Nomenclature
@@ -63,17 +77,22 @@ We get an error here because `else` is a function in R. You also don't want to g
 ## Practice
 1. Create three new objects, `venom_GT`, `chiron`, and `veyron`. These are the fastest cars in the world. Assign each car to its top speed. The venom_GT can go 270, chiron is 261, and veyron is 268.
 ```{r}
-
+venom_GT <- 270
+chiron <- 261
+veyron <- 268
 ```
 
 2. Use arithmetic to calculate the mean top speed for the cars.
 ```{r}
-
+(270+261+268)/3
 ```
 
 3. Use the function `mean()` to calculate the mean top speed for the cars.
 ```{r}
-
+X <- c(270,261,268)
+```
+```{r}
+mean(x)
 ```
 
 ## Types of Data
@@ -90,19 +109,46 @@ To find out what type of data you are working with, use the `class()` function. 
 ```{r}
 class(my_numeric)
 ```
+```{r}
+class(my_integer)
+```
 
 You can use the `is()` and `as()` functions to clarify or specify a type of data.
 ```{r}
 is.integer(my_numeric) #is my_numeric an integer?
 ```
+```{r}
+is.numeric(my_numeric)
+```
 
 ```{r}
-my_integer <- 
-  as.integer(my_numeric) #create a new object specified as an integer
+is.logical(my_character)
+```
+```{r}
+is.complex(my_complex)
+```
+
+```{r}
+my_integer <- as.integer(my_numeric) #create a new object specified as an integer
 ```
 
 ```{r}
 is.integer(my_integer) #is my_numeric an integer?
+```
+
+```{r}
+practice_integer <- 50L
+practice_integer
+is.integer(practice_integer)
+```
+
+```{r}
+practice_integer <- as.numeric(practice_integer)
+is.integer(practice_integer)
+```
+
+```{r}
+is.numeric(practice_integer)
 ```
 
 ## Missing Data
@@ -121,6 +167,17 @@ is.na(my_missing)
 anyNA(my_missing)
 ```
 
+```{r}
+NA_practice <- c(10,NA,30)
+```
+
+```{r}
+is.na(NA_practice)
+```
+```{r}
+anyNA(NA_practice)
+```
+
 ## Practice  
 1. Let's create a vector that includes some missing data (we will discuss vectors more in part 2). For now, run the following code chunk.  
 ```{r}
@@ -131,13 +188,22 @@ new_vector <- c(7, 6.2, 5, 9, NA, 4, 9.8, 7, 3, 2)
 ```{r}
 mean(new_vector)
 ```
+```{r}
+is.na(new_vector)
+```
+```{r}
+anyNA(new_vector)
+```
 
-3. How do you interpret this result? What does this mean about NAs?  
+3. How do you interpret this result? What does this mean about NAs? 
+
+We cannot calculate the mean when we have missing data, so we need to find a way to deal with them so we can calculate a mean. 
 
 4. Recalculate the mean using the following code chunk. Why is the useful?  
 ```{r}
 mean(new_vector, na.rm=T) #na.rm removes the NA values in the vector
 ```
+The function na.rm+T allows us to calculate the mean by removing NAs. 
 
 ## That's it! Take a break and I will see you on Zoom!  
 
