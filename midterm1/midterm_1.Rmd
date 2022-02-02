@@ -155,7 +155,7 @@ names(vertebrates)
 ```{r}
 vertebrates %>% 
   select(distance, ra_apes, ra_birds, ra_elephant, ra_monkeys, ra_rodent, ra_ungulate) %>%
-  filter(distance<3|distance>25) %>% 
+  filter(distance<3|distance>25) %>%
   arrange(desc(distance))
 ```
 The conclusion that abundance drops off the closer you get to a village holds true for some of the animals, such as apes, monkeys, and ungulates. However, birds, elephants, and rodents do not follow the same pattern and seem to generally increase in abundance as they get closer to villages. 
