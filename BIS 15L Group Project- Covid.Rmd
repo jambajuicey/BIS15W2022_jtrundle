@@ -25,11 +25,72 @@ covid <- read_csv(here("Gov_Responses2Covid19_last (1).csv"))
 ```
 
 ```{r}
-names(covid)
+view(covid)
 ```
 
 ```{r}
-view(covid)
+glimpse(covid)
+```
+
+```{r}
+naniar::miss_var_summary(covid)
+```
+```{r}
+dim(covid)
+```
+
+```{r}
+names(covid)
+```
+
+Total sum of cases per country: 
+```{r}
+covid %>% 
+  select(country, cases) %>% 
+  group_by(country) %>% 
+  summarise(sum_cases=sum(cases)) %>% 
+  arrange(desc(sum_cases))
+```
+```{r}
+covid %>% 
+  group_by(country) %>% 
+  summarise(sum_cases=sum(cases)) %>% 
+  top_n(10, sum_cases) %>% 
+  ggplot(aes(x=country, y=sum_cases))+
+  geom_point()
+```
+Total sum of deaths per country: 
+```{r}
+covid %>% 
+  select(country, deaths) %>% 
+  group_by(country) %>% 
+  summarise(sum_deaths=sum(deaths)) %>% 
+  arrange(desc(sum_deaths))
+```
+```{r}
+covid %>% 
+  group_by(country) %>% 
+  summarise(sum_deaths=sum(deaths)) %>% 
+  top_n(10, sum_deaths) %>% 
+  ggplot(aes(x=country, y=sum_deaths))+
+  geom_point()
+```
+
+School closures in US?: 
+```{r}
+covid %>% 
+  select(country, d, school) %>% 
+  filter(country=="United States of America") %>% 
+  group_by(school)
+```
+
+```{r}
+covid %>% 
+  select(country, d, school) %>% 
+  filter(country=="United States of America") %>% 
+  group_by(school) %>% 
+  ggplot(aes(x=d, y=school))+
+  geom_point()
 ```
 
 ## R Markdown

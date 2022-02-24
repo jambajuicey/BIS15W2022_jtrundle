@@ -211,7 +211,7 @@ income_long %>%
   arrange(desc(GDP_growth))
 ```
 
-##FIX
+
 ```{r}
 income_long %>% 
   filter(country=="United Arab Emirates" | country=="Qatar" | country=="Brunei" | country=="Kuwait" | country=="Singapore") %>% 
