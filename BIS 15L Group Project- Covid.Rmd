@@ -55,41 +55,43 @@ covid %>%
 covid %>% 
   group_by(country) %>% 
   summarise(sum_cases=sum(cases)) %>% 
-  top_n(10, sum_cases) %>% 
+  top_n(5, sum_cases) %>% 
   ggplot(aes(x=country, y=sum_cases))+
   geom_point()
 ```
+Top 5 countries with the most total covid cases over 2020: United States, India, Brazil, Russia, Colombia. 
+
 Total sum of deaths per country: 
 ```{r}
-covid %>% 
-  select(country, deaths) %>% 
-  group_by(country) %>% 
-  summarise(sum_deaths=sum(deaths)) %>% 
+covid %>%
+  select(country, deaths) %>%
+  group_by(country) %>%
+  summarise(sum_deaths=sum(deaths)) %>%
   arrange(desc(sum_deaths))
 ```
 ```{r}
 covid %>% 
   group_by(country) %>% 
   summarise(sum_deaths=sum(deaths)) %>% 
-  top_n(10, sum_deaths) %>% 
+  top_n(5, sum_deaths) %>% 
   ggplot(aes(x=country, y=sum_deaths))+
   geom_point()
 ```
+Top 5 countries with the most total deaths over 2020: United States of America, Brazil, India, Mexico, United Kingdom. 
 
 School closures in US?: 
 ```{r}
 covid %>% 
-  select(country, d, school) %>% 
-  filter(country=="United States of America") %>% 
-  group_by(school)
+  filter(country=="United States of America" | country=="India" | country=="Brazil" | country=="Russia" | country=="Colombia") %>% 
+  select(country, d, cases, school) %>% 
+  group_by(country)
 ```
 
 ```{r}
 covid %>% 
   select(country, d, school) %>% 
-  filter(country=="United States of America") %>% 
-  group_by(school) %>% 
-  ggplot(aes(x=d, y=school))+
+  filter(country=="United States of America" | country=="India" | country=="Brazil" | country=="Russia" | country=="Colombia") %>%
+  ggplot(aes(x=d, y=school, color=country))+
   geom_point()
 ```
 

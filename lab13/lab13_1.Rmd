@@ -68,21 +68,44 @@ server <- function(input, output, session) {
 shinyApp(ui, server)
 ```
 
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  
+)
+
+server <- function(input, output, session) {
+  
+}
+
+shinyApp(ui, server)
+```
+
 For the rest of the lab we will work on building an example app using `palmerpenguins`.  
 
 ## Shiny Inputs
 There are many types of inputs in shiny, see the [shiny cheat sheet](https://shiny.rstudio.com/images/shiny-cheatsheet.pdf). Our example app uses `selectInput()`, which takes a set of predefined choices and supplies them to the user. We are working with the `palmerpenguins` data set, so we want the selections to be the column names of the data frame.  
 
 Let's get the names of the `palmerpenguins` data frame and add them as a `selectInput()` to our ui. `selectInput()` takes several arguments including the label that the server function will use, the label that will display to the user, the selection choices, and the initially selected choice.  
+
 ```{r}
 names(penguins)
 ```
 
+```{r}
+penguins %>% 
+  ggplot(aes(x=flipper_length_mm, y=body_mass_g, color=species))+
+  geom_point()
+```
+
 We won't use the name `species` because that will be the `ggplot` grouping variable. Copy and paste the code below and run the app to see our new input. 
+
 ```{r, eval=F, echo=T}
 ui <- fluidPage(
     selectInput("x", "Select X Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
-              selected = "bill_length_mm")
+              selected = "bill_length_mm") #selectInput incorporates a drop down menu to choose variables,
+                                            #selected= chooses which variables to start on
 )
 
 server <- function(input, output) {
@@ -98,7 +121,7 @@ ui <- fluidPage(
     selectInput("x", "Select X Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
               selected = "bill_length_mm"),
     selectInput("y", "Select Y Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
-              selected = "bill_length_mm")
+              selected = "bill_length_mm") #same thing for Y axis
 )
 
 server <- function(input, output) {
@@ -112,6 +135,7 @@ shinyApp(ui, server)
 Great, we now have our user inputs set up! Now we need to work with those inputs so R can make the plot. This can be the tricky part. The processing is done in the server function. The ui passes the names of our choices via an object called `inputs` to the server function. We need to access our inputs by their names with the `$` symbol. To get the x input we type `input$x` and y is `input$y`.    
 
 All reactive inputs need to be wrapped in a reactive environment called a reactive function. Reactivity is the core of shiny. See the cheat sheet for [reactive environment types](https://shiny.rstudio.com/images/shiny-cheatsheet.pdf). Let's wrap our reactive input values in a reactive function on the server side and run our app as a test. What happens? Are we doing anything with the inputs yet? What happens if you remove the reactive function from the server side and run the app?
+
 ```{r, eval=F, echo=T}
 ui <- fluidPage(
     selectInput("x", "Select X Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
@@ -136,7 +160,7 @@ ui <- fluidPage(
               selected = "bill_length_mm"),
     selectInput("y", "Select Y Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"),
               selected = "bill_depth_mm"),
-  plotOutput("plot", width = "500px", height = "400px")
+  plotOutput("plot", width = "500px", height = "400px") #tell shiny that we want to make a plot (with dimensions)
 )
 
 server <- function(input, output) {
@@ -175,7 +199,33 @@ homerange %>%
   geom_bar(position="dodge")
 ```
 
-2. Build a shiny app that produces a barplot that explores `locomotion` type with a fill reaction for the variables `trophic.guild` and `thermoregulation`.  
+2. Build a shiny app that produces a barplot that explores `locomotion` type with a fill reaction for the variables `trophic.guild` and `thermoregulation`. 
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  selectInput("x", "Select Fill Variable", choices = c("trophic.guild", "thermoregulation"),
+              selected = "trophic.guild"),
+  plotOutput("plot", width = "500px", height = "600px")
+  
+)
+
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    ggplot(data=homerange, aes_string(x="locomotion", fill=input$x))+
+    geom_bar(position="dodge", color="black", alpha=0.7)+
+    theme_grey(base_size=15)+
+    labs(title = "Locomotion Types",
+           x="Locomotion",
+           y="Count")
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+
 ```{r}
 library(shiny)
 

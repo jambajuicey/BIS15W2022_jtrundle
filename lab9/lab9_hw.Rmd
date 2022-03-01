@@ -144,7 +144,7 @@ view(college)
 
 ```{r}
 UC_colleges <- college %>% 
-  filter(grepl("University of California", instnm))
+  filter(grepl("University of California", instnm)) #str_detect is also helpful for pulling something out 
 UC_colleges
 ```
 Remove `Hastings College of Law` and `UC San Francisco` and store the final data frame as a new object `univ_calif_final`.

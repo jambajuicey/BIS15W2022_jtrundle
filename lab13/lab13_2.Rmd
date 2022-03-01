@@ -120,14 +120,16 @@ shinyApp(ui, server)
 
 ## Adding Numeric Input
 Let's try adding a new numeric input so the user can change the size of the points on the plot with a slider. We can do this with the `sliderInput()` function. The `sliderInput()` function takes a label that the server function will use to access the value, the label that the ui will display to the user, a minimum and maximum value, a starting value, and a step size. Edit the script to include the slider input in the ui and for the server to access the input value.
+
 ```{r, eval=F, echo=T}
 ui <- fluidPage(
     selectInput("x", "Select X Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"),
               selected = "bill_length_mm"),
     selectInput("y", "Select Y Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"),
               selected = "bill_depth_mm"),
-    sliderInput("pointsize", "Select the Point Size", min = 0.5, max = 3, value = 1, step = 0.5),
-    plotOutput("plot", width = "500px", height = "400px")
+    sliderInput("pointsize", "Select the Point Size", min = 0.5, max = 5, value = 1.5, step = 0.1),
+    plotOutput("plot", width = "500px", height = "400px") #value is where the point size starts, the step is the intervals you can change the point size to
+
 )
 
 server <- function(input, output, session) {
@@ -216,7 +218,7 @@ ui <- dashboardPage(
   dashboardSidebar(disable = T),
   dashboardBody(
   fluidRow(
-  box(
+  box( #first box
   selectInput("x", "Select X Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
               selected = "bill_length_mm"),
   selectInput("y", "Select Y Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
@@ -224,7 +226,7 @@ ui <- dashboardPage(
   sliderInput("pointsize", "Select the Point Size", min = 1, max = 5, value = 2, step = 0.5)
   ), # close the first box
   
-  box(
+  box( #second box
   plotOutput("plot", width = "500px", height = "500px")
   ) # close the second box
   ) # close the row
@@ -250,14 +252,14 @@ ui <- dashboardPage(
   dashboardSidebar(disable = T),
   dashboardBody(
   fluidRow(
-  box(title = "Plot Options", width = 3,
+  box(title = "Plot Options", width = 4, #out of 12 (which is across the screeen)
   selectInput("x", "Select X Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
               selected = "bill_length_mm"),
   selectInput("y", "Select Y Variable", choices = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
               selected = "bill_depth_mm"),
    sliderInput("pointsize", "Select the Point Size", min = 1, max = 5, value = 2, step = 0.5)
   ), # close the first box
-  box(title = "Plot of Penguins Data", width = 7,
+  box(title = "Plot of Penguins Data", width = 8,
   plotOutput("plot", width = "600px", height = "500px")
   ) # close the second box
   ) # close the row
@@ -293,6 +295,44 @@ wolves %>%
   ggplot(aes(x=sex, fill=sex))+
   geom_bar()+
   facet_wrap(~pop)
+```
+```{r}
+names(wolves)
+```
+
+```{r}
+wolves %>% 
+  n_distinct(pop)
+```
+
+```{r}
+ui <- dashboardPage(
+  dashboardHeader(title = "Sexual Composition of Wolves by Population"),
+  dashboardSidebar(disable=T),
+  dashboardBody(
+    fluidRow(
+      box(
+        selectInput("population", "Select Population of Interest", choices=unique(wolves$pop)),
+        selected = "AK.PEN"
+      ),
+      box(
+        plotOutput("plot", width = "500px", height = "600px")
+      )
+    )
+  )
+)
+server <- function(input, output, session) {
+  session$onSessionEnded(stopApp)
+  output$popPlot <- renderPlot({
+    
+    wolves %>% 
+      filter(pop==input$x) %>% 
+      filter(sex!="NA") %>% 
+      ggplot(wolves, aes_string(x="sex", fill="sex"))+
+      geom_bar()
+  })
+}
+shinyApp(ui, server)
 ```
 
 ## That's it, let's take a break!   
