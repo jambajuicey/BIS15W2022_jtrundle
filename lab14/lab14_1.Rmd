@@ -14,12 +14,17 @@ output:
 1. Build a violin plot with `geom_violin`.
 2. Build heat maps using `geom_tile`.
 
+```{r}
+#install.packages("ggVennDiagram")
+#install.packages("ggwordcloud")
+```
 
 ## Load the Libraries
 ```{r}
 library(tidyverse)
 library(janitor)
 library("palmerpenguins")
+library(dplyr)
 
 options(scipen=999) #cancels the use of scientific notation for the session
 
@@ -56,7 +61,6 @@ the distribution of continuous data across a categorical variable.
 ```{r}
 head(penguins)
 ```
-
 
 **Let's say we want to travel to an island and take pictures of the cutest little penguines we can find. We need to determine which island we are most likely to find the smallest penguins on.**
 
@@ -108,16 +112,24 @@ Try making a violin plot of taxon from the homerange data:
  1. Remind yourself what the data look like:
 
 ```{r}
+glimpse(homerange)
+```
 
+```{r}
+head(homerange)
 ```
 
   2. Make a violin plot of `log10.mass` by `taxon`, and a box plot of `log10.mass` by `taxon`. You can use 1 or 2 plots.
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x=log10.mass, y=taxon, fill=taxon))+
+  geom_boxplot(alpha=0.7, color="grey")+
+  geom_violin(alpha=0.3)
 ```
 
 3. What information can you gather from the violin plot that might have been missed with the box plot?
 
+The violin plot tells us the distribution of the data, like a density plot, so we know where the most or least species are. 
 
 ## Heat maps
 
@@ -140,7 +152,7 @@ heartrate_long
 
 ```{r}
 heartrate_long %>%
-  ggplot(aes(patient, drug, fill= heartrate)) + 
+  ggplot(aes(x= patient, y = drug, fill= heartrate)) + 
   geom_tile() +
   scale_fill_gradient(low="yellow", high="red")
 ```
@@ -159,20 +171,26 @@ heartrate_diff
 
 ```{r}
 heartrate_diff %>% 
-  ggplot(aes(patient, drug, fill= heartrate)) + 
+  ggplot(aes(x = patient, y = drug, fill= heartrate)) + 
   geom_tile()+
-  scale_fill_gradient2(low="green", mid = "white", high="red")
+  scale_fill_gradient2(low="purple", mid = "white", high="red")
 # scale_fill_graient2 lets you set a color direction for zero (mid), positive (high), and negative (low)
 ```
 
 
 ## Practice
   1. Which drug lowers heart rate? raises it?
+  
+  Drug D lowers heart rate, drug C raises heart rate. 
 
   2. Make a heat map for body mass by species & sex for penguins
 
 ```{r}
-
+penguins %>% 
+  filter(sex!="NA") %>% 
+  ggplot(aes(x = species, y = sex, fill = body_mass_g))+
+  geom_tile()+
+  scale_fill_gradient(low = "darkblue", high = "orange")
 ```
 
 

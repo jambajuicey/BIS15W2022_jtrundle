@@ -2,10 +2,11 @@
 title: "Data Visualization: Venn Diagrams & Word Clouds"
 date: "`r Sys.Date()`"
 output:
-  html_document:
+  html_document: 
     theme: spacelab
     toc: yes
     toc_float: yes
+    keep_md: yes
   pdf_document:
     toc: yes
 ---
@@ -23,8 +24,9 @@ library(tidyverse)
 #install.packages("ggVennDiagram")
 library(ggVennDiagram)
 library(RColorBrewer)
-#install.packages("ggworldcloud")
+#install.packages("ggwordcloud")
 library(ggwordcloud)
+library(dplyr)
 ```
 
 ## Data
@@ -59,13 +61,13 @@ swimming_vec <- homerange %>%
   pull(common.name)
 ```
 
-To build a Venn diagram of these, we make a list or the vectors that represent our questions. 
+To build a Venn diagram of these, we make a list of the vectors that represent our questions. 
 The list represents the number of circles going into the venn diagram" and the vectors represent "what are the numbers going into the venn diagram"
 
 ```{r}
 fly_or_swim_list <- list(flying_vec, swimming_vec)
 
-ggVennDiagram(fly_or_swim_list, category.names = c("Fly", "Swim"))
+ggVennDiagram(fly_or_swim_list, category.names = c("Flying", "Swimming"))
 ```
 
 Woah! an image!
@@ -79,7 +81,7 @@ Do they fly? Are they a bird?
 We can recycle the `flying_vec`
 Do they fly?
 ```{r}
-# flying_vec
+flying_vec
 ```
 
 Are they a bird?
@@ -107,7 +109,10 @@ homerange%>%
 
 what is the flying non-bird?
 ```{r}
-
+homerange %>% 
+  filter(taxon!="birds") %>% 
+  filter(locomotion=="flying") %>% 
+  select(common.name)
 ```
 
 
@@ -119,7 +124,7 @@ Are they an herbivore?
 ```{r}
 herbivore_vec <- homerange %>%
   filter(trophic.guild == "herbivore")%>%
-  pull(common.name)
+  pull(common.name) #making vector from name
 
 ```
 
@@ -137,7 +142,7 @@ Lets work with the 2 question plot for now:
 venn_plot <- ggVennDiagram(fly_or_bird_list, category.names = c("Fly", "Bird"), edge_size = 1.5)
 
 venn_plot +
-  scale_fill_distiller(palette = "Greys")+ #distiller is for discrete data
+  scale_fill_distiller(palette = "Purples")+ #distiller is for discrete data
   labs(title = "Do all birds fly? Do only birds fly?",
          caption = ("you can add a caption here, e.g.: Studys show not all birds fly, and not only birds fly")
   )
@@ -151,7 +156,7 @@ ggVennDiagram(fly_or_bird_list,
               label_color = "firebrick",                  # sets overlap-quantity label color
               label_size = 4                              # sets overlap-label size
               )+
-  scale_color_brewer(palette = "Set3")+                   # sets palette for circle colors
+  scale_color_brewer(palette = "Set2")+                   # sets palette for circle colors
   scale_fill_distiller(palette = "Greys")+                # distiller is for discrete data
   labs(title = "Do all birds fly? Do only birds fly?",
          caption = ("you can add a caption here, e.g.: Studys show not all birds fly, and not only birds fly") )
@@ -165,7 +170,7 @@ Try making a 4 circle Venn diagram to show the intersection of:
 - swimming
 - carnivores
 - aquatic
-- endotherms
+- ectotherms
 
 You can use locomotion, trophic guild, realm, and thermoregulation. 
 
@@ -195,8 +200,11 @@ ecto_vec<- homerange %>%
 
 # Make the list of vectors:
 
-
+swim_carni_aqua_ecto_list <- list(swimming_vec, carni_vec, aqua_vec, ecto_vec)
 # Make the plot:
+
+ggVennDiagram(swim_carni_aqua_ecto_list, category.names = c("Swim", "Carnivore", "Aquatic", "Ectotherm"))+
+  scale_fill_distiller(palette = "greens")
 ```
 
 
@@ -207,7 +215,8 @@ Use dplyr to determine which 20 animals from this plot are:
 - NOT Carnivores?
 
 ```{r}
-
+homerange %>% 
+  filter(thermoregulation=="ectotherm" & locomotion=="swimming" & realm=="aquatic" & trophic.guild=="carnivore")
 ```
 
 
@@ -248,11 +257,22 @@ If they dont fit, try tinkering the `scale_size_area(max_size =   )`
 
 make the count table:
 ```{r}
-
+reptilia_count <- homerange %>% 
+  filter(class=="reptilia") %>% 
+  count(family)
+reptilia_count
 ```
 
 
 make the plot:
 ```{r}
-
+reptilia_count %>% 
+  ggplot(aes(
+    label = family,
+    size = n, 
+    color = family
+  ))+
+  geom_text_wordcloud()+
+  scale_size_area(max_size = 16)+
+  theme_light()
 ```
